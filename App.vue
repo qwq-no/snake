@@ -1,7 +1,12 @@
-<script setup>
-import home from './components/home.vue'
-</script>
-
 <template>
-  <home/>
+  <div id="app">
+    <header></header>
+    <main>
+      <router-view/>
+    </main>
+    <footer></footer>
+  </div>
 </template>
+
+<script setup>
+</script>
