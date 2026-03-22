@@ -18,6 +18,7 @@
         </li>
       </ul>
     </div>
+    <p>ID:{{userId}}</p>
 
     <div v-if="activeName" class="overlay-backdrop">
       <div class="overlay-center" role="dialog" aria-modal="true">
@@ -33,11 +34,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {onMounted, ref} from 'vue';
 import router from "../router/index.js";
 import AddFriend from "./AddFriend.vue";
 import RoomManagement from "./RoomManagement.vue";
 import Set from "./Set.vue";
+import {getId} from "../utils/auth.js";
 
 const componentsMap = { addFriend: AddFriend, roomManagement: RoomManagement, set: Set };
 const friends = ref([
@@ -47,7 +49,15 @@ const friends = ref([
 ]);
 const activeName = ref(null);
 const activeProps = ref({});
+const userId = ref('');
 
+onMounted(async () => {
+  try {
+    userId.value = await getId()
+  } catch (e) {
+    console.error(e)
+  }
+})
 function open(name, props = {}) {
   activeName.value = name;
   activeProps.value = props;

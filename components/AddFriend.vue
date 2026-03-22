@@ -1,5 +1,5 @@
 <template>
-  <button @click="back">返回主页</button>
+  
 </template>
 
 <script setup>

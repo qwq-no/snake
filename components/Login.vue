@@ -20,90 +20,48 @@
 
       <p v-if="error" class="error">{{ error }}</p>
     </form>
+
     <button class="register" @click="goRegister">register</button>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Login',
-  data() {
-    return {
-      form: {
-        username: '',
-        password: ''
-      },
-      loading: false,
-      error: ''
-    };
-  },
-  methods: {
-    async onSubmit() {
-      this.error = '';
-      this.loading = true;
+<script setup>
+import { login } from '../utils/auth.js';
+import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
-      try {
-        const resp = await fetch('/api/user/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.form),
-          credentials: 'include' // 必须：让浏览器接受并保存 HttpOnly Set-Cookie
-        });
+// 1) 状态：ref 就是“可响应变量”
+const form = ref({
+  username: '',
+  password: ''
+})
+const loading = ref(false)
+const error = ref('')
 
-        // 先处理 HTTP 层
-        if (!resp.ok) {
-          // 尝试解析后端返回的错误信息
-          let errJson = null;
-          try { errJson = await resp.json(); } catch (e) {}
-          this.error = errJson?.msg || `HTTP ${resp.status}`;
-          return;
-        }
+// 2) 路由对象（用于跳转）
+const router = useRouter()
+const route = useRoute()
 
-        // 解析 body（你的 Result<T>）
-        let result;
-        try {
-          result = await resp.json();
-        } catch (e) {
-          this.error = 'Invalid JSON response from server';
-          return;
-        }
+// 3) 提交函数
+async function onSubmit() {
+  error.value = ''
+  loading.value = true
+  try {
+    // 调后端登录（你封装的 api）
+    await login(form.value)
 
-        // 检查后端 Result.code（你的 Result 成功码是 1）
-        if (!result || result.code !== 1) {
-          this.error = result?.msg || 'Login failed';
-          return;
-        }
-
-        // 登录成功：后端已经通过 Set-Cookie 下发 refresh token（HttpOnly）
-        // 可选：把返回的用户信息写入 store（如果你使用 Vuex/Pinia）
-        if (this.$store && result.data) {
-          // 假设你有一个 mutation 或 action 可以设置用户
-          // 你需要根据项目实际名称改成合适的方法，如 this.$store.commit('setUser', result.data)
-          if (typeof this.$store.commit === 'function') {
-            this.$store.commit('setUser', result.data);
-          }
-        }
-
-        // 导航：优先使用路由 query 中的 redirect（如果有），否则跳到 /home
-        const redirect = this.$route?.query?.redirect || '/home';
-        // 推荐使用 replace 避免用户按回退返回到登录页
-        this.$router.replace(redirect);
-
-      } catch (e) {
-        // 网络或不可预期错误
-        this.error = e.message || 'Network error';
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    goRegister() {
-      this.$router.push('/register');
-    }
+    // 登录成功后跳转
+    const redirect = route.query.redirect || '/home'
+    await router.replace(redirect)
+  } catch (e) {
+    error.value = e.message || 'Login failed'
+  } finally {
+    loading.value = false
   }
-};
-</script>
+}
 
-<style scoped>
-/* 省略，保留你原来的样式 */
-</style>
+// 4) 去注册页
+function goRegister() {
+  router.push('/register')
+}
+</script>

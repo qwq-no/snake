@@ -7,9 +7,9 @@ import Game from "../components/Game.vue";
 import Register from "../components/Register.vue";
 
 const routes = [
-    { path: '/', component: Login },
-    { path: '/login', component: Login },
-    { path: '/register', component: Register },
+    { path: '/', redirect: '/home' },
+    { path: '/login', component: Login, meta: { public: true } },
+    { path: '/register', component: Register, meta: { public: true } },
     { path: '/home', component: Home },
     { path: '/roomManagement', component: RoomManagement },
     { path: '/addFriend', component: AddFriend },
@@ -20,5 +20,32 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 })
+
+// 路由守卫：非公开页面必须登录
+router.beforeEach(async (to) => {
+    if (to.meta.public) return true;
+
+    const token = localStorage.getItem('accessToken');
+    if (token) return true;
+
+    // 没 accessToken，尝试用 refresh cookie 自动续签
+    try {
+        const resp = await fetch('/api/refresh/login', {
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        if (resp.ok) {
+            const result = await resp.json();
+            const newToken = result?.data?.accessToken;
+            if (result?.code === 1 && newToken) {
+                localStorage.setItem('accessToken', newToken);
+                return true;
+            }
+        }
+    } catch (e) {}
+
+    return '/login';
+});
 
 export default router
