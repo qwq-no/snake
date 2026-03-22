@@ -52,8 +52,16 @@ export async function tryAutoLogin() {
     return true;
 }
 
-export function logout() {
-    localStorage.removeItem('accessToken');
+export async function logout() {
+    try {
+        await fetch('http://localhost:8086/api/refresh/logout', {
+            method: 'POST',
+            credentials: 'include',
+        });
+    } finally {
+        localStorage.removeItem('accessToken');
+        window.location.href = '/login';
+    }
 }
 
 export async function getId() {

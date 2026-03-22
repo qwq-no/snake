@@ -19,6 +19,7 @@
       </ul>
     </div>
     <p>ID:{{userId}}</p>
+    <button @click="logout">登出</button>
 
     <div v-if="activeName" class="overlay-backdrop">
       <div class="overlay-center" role="dialog" aria-modal="true">
@@ -39,7 +40,7 @@ import router from "../router/index.js";
 import AddFriend from "./AddFriend.vue";
 import RoomManagement from "./RoomManagement.vue";
 import Set from "./Set.vue";
-import {getId} from "../utils/auth.js";
+import {getId, logout} from "../utils/auth.js";
 
 const componentsMap = { addFriend: AddFriend, roomManagement: RoomManagement, set: Set };
 const friends = ref([
