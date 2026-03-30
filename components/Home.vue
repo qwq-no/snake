@@ -18,9 +18,8 @@
         </li>
       </ul>
     </div>
-    <p>ID:{{userId}}</p>
     <button @click="logout">登出</button>
-
+    <p class="userCode">{{userCode}}</p>
     <div v-if="activeName" class="overlay-backdrop">
       <div class="overlay-center" role="dialog" aria-modal="true">
         <button class="close" @click="close">X</button>
@@ -40,7 +39,7 @@ import router from "../router/index.js";
 import AddFriend from "./AddFriend.vue";
 import RoomManagement from "./RoomManagement.vue";
 import Set from "./Set.vue";
-import {getId, logout} from "../utils/auth.js";
+import {logout} from "../utils/auth.js";
 
 const componentsMap = { addFriend: AddFriend, roomManagement: RoomManagement, set: Set };
 const friends = ref([
@@ -50,14 +49,9 @@ const friends = ref([
 ]);
 const activeName = ref(null);
 const activeProps = ref({});
-const userId = ref('');
-
-onMounted(async () => {
-  try {
-    userId.value = await getId()
-  } catch (e) {
-    console.error(e)
-  }
+const userCode = ref(null);
+onMounted(() => {
+  userCode.value = sessionStorage.getItem("userCode");
 })
 function open(name, props = {}) {
   activeName.value = name;

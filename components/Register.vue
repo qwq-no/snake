@@ -30,60 +30,45 @@
 
       <p v-if="error" class="error">{{ error }}</p>
     </form>
+
     <button class="goLogin" @click="goLogin">Login</button>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Register',
-  data() {
-    return {
-      form: {
-        username: '',
-        email: '',
-        password: '',
-        displayName: ''
-      },
-      loading: false,
-      error: ''
-    };
-  },
-  methods: {
-    async onSubmit() {
-      this.error = '';
-      this.loading = true;
-      try {
-        const resp = await fetch('/api/user/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.form)
-        });
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { register } from '../utils/auth.js'
 
-        if (resp.status === 201 || resp.status === 204 || resp.status === 200) {
-          this.$router.push('/login');
-          return;
-        }
+const router = useRouter()
 
-        let msg = '';
-        try {
-          const data = await resp.json();
-          msg = data?.msg || data?.message || '';
-        } catch (_) {
-          msg = await resp.text();
-        }
-        this.error = msg || `Registration failed (status ${resp.status})`;
-      } catch (e) {
-        this.error = e.message || 'Network error';
-      } finally {
-        this.loading = false;
-      }
-    },
-    goLogin() {
-      this.$router.push('/login');
-    }
+const form = ref({
+  username: '',
+  email: '',
+  password: '',
+  displayName: ''
+})
+
+const loading = ref(false)
+const error = ref('')
+
+async function onSubmit() {
+  error.value = ''
+  loading.value = true
+
+  try {
+    await register(form.value)
+    await router.push('/login')
+  } catch (e) {
+    error.value = e.message || 'Register failed'
+  } finally {
+    loading.value = false
   }
-};
+}
+
+function goLogin() {
+  router.push('/login')
+}
 </script>
 
 <style scoped>
@@ -116,5 +101,8 @@ button {
 .error {
   margin-top: 12px;
   color: #b00020;
+}
+.goLogin {
+  margin-top: 12px;
 }
 </style>

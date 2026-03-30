@@ -3,7 +3,7 @@ import { http } from './http.js'
 export async function login(payload) {
     const resp = await http('/api/user/login', {
         method: 'POST',
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
     });
     const result = await resp.json();
 
@@ -15,13 +15,16 @@ export async function login(payload) {
     if (!accessToken) throw new Error('缺少 accessToken');
 
     localStorage.setItem('accessToken', accessToken);
-    return result.data; // {accessToken,id,username,displayName}
+    sessionStorage.setItem('userCode', result?.data?.user.userCode);
+    sessionStorage.setItem('username', result?.data?.user.username);
+    sessionStorage.setItem('displayName', result?.data?.user.displayName);
+    return result.data; // {accessToken,user{userCode,username,displayName}
 }
 
 export async function register(payload) {
     const resp = await http('/api/user/register', {
         method: 'POST',
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
     });
     const result = await resp.json();
 
@@ -31,46 +34,32 @@ export async function register(payload) {
     return result.data;
 }
 
-// App 启动时调用：无 access 也能通过 refresh cookie 自动拿新 access
-export async function tryAutoLogin() {
-    const current = localStorage.getItem('accessToken');
-    if (current) return true;
-
-    const resp = await fetch('/api/refresh/login', {
-        method: 'POST',
-        credentials: 'include',
-    });
-    if (!resp.ok) return false;
-
-    const result = await resp.json();
-    if (result?.code !== 1) return false;
-
-    const newToken = result?.data?.accessToken;
-    if (!newToken) return false;
-
-    localStorage.setItem('accessToken', newToken);
-    return true;
-}
-
 export async function logout() {
     try {
-        await fetch('http://localhost:8086/api/refresh/logout', {
+        console.log('logout start');
+        await fetch('/api/refresh/logout', {
             method: 'POST',
-            credentials: 'include',
+            credentials: 'include'
         });
     } finally {
-        localStorage.removeItem('accessToken');
-        window.location.href = '/login';
+        localStorage.clear();
+        sessionStorage.clear();
+        // window.location.href = '/login';
     }
 }
 
-export async function getId() {
-    const resp = await http('/api/user/getId', {
-        method: 'GET'
+export async function submitLength(length) {
+    const resp = await http('/api/user/getMaxLength', {
+        method: 'POST',
+        body: JSON.stringify({ length }),
+        credentials: 'include'
     });
+
     const result = await resp.json();
+
     if (!resp.ok || result?.code !== 1) {
-        throw new Error(result?.msg || 'unauthorized');
+        throw new Error(result?.msg || '提交长度失败');
     }
+
     return result.data;
 }
