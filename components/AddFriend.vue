@@ -1,13 +1,24 @@
-<template>
-  
-</template>
-
 <script setup>
-import router from "../router/index.js";
+import { ref } from 'vue';
+import { submitFriendApply } from '../utils/api.js';
 
-function back(){router.go(-1)}
+const otherUserCode = ref('');
+const message = ref('');
+
+async function applyFriend() {
+  try {
+    await submitFriendApply(Number(otherUserCode.value));
+    message.value = '好友申请已发送';
+  } catch (e) {
+    message.value = e.message || '申请失败';
+  }
+}
 </script>
 
-<style scoped>
-
-</style>
+<template>
+  <div class="add-friend">
+    <input v-model="otherUserCode" placeholder="userCode" />
+    <button @click="applyFriend">发送好友申请</button>
+    <p>{{ message }}</p>
+  </div>
+</template>
