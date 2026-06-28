@@ -157,7 +157,6 @@ function dispatchMessage(msg) {
     const handler = getPageHandlers().get(pageType);
     if (handler) {
         handler(msg);
-        return;
     }
 
 }

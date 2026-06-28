@@ -130,7 +130,6 @@ function homeHandler(msg) {
 
   if (msg.type === 'group_chat_history') {
     groupMessages.value = (msg.data || []).slice(-300);
-    return;
   }
 }
 

@@ -227,7 +227,6 @@ function onlineHandler(msg) {
     }
     pendingRoomDelta = msg.data;
     scheduleOnlineRender();
-    return;
   }
 
 }
@@ -591,9 +590,7 @@ function drawMinimap() {
     if (!showAll && String(snake.ownerUserCode) !== String(myUserCode)) continue;
 
     const head = snake.body[0];
-    let color = getSnakeColor(snake);
-
-    ctx.fillStyle = color;
+    ctx.fillStyle = getSnakeColor(snake);
     const px = x0 + head.x * WORLD.grid * scale;
     const py = y0 + head.y * WORLD.grid * scale;
 
@@ -741,7 +738,6 @@ function renderFog() {
 }
 
 function render() {
-  const renderStart = performance.now();
   const renderMyIndex = snakes.value.findIndex(s => String(s.ownerUserCode) === String(myUserCode));
   const targetSnake = renderMyIndex >= 0 ? snakes.value[renderMyIndex] : snakes.value[0];
 

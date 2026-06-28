@@ -173,7 +173,6 @@ function talkHandler(msg) {
       chatUsers.value.splice(existingIdx, 1);
     }
     chatUsers.value.unshift(contactEntry);
-    return;
   }
 }
 
