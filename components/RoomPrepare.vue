@@ -41,21 +41,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import {onBeforeUnmount, onMounted, ref} from 'vue';
 import router from "../router/index.js";
 
-import { sessionStore } from "../utils/sessionStorage.js";
+import {sessionStore} from "../utils/sessionStorage.js";
 import {
   initGameWs,
   registerPageHandler,
   sendLeaveRoom,
-  sendReady, sendUnready,
-  syncCurrentPageToServer,
+  sendReady,
+  sendUnready,
   setCurrentPageType,
   setCurrentRoomCode,
+  syncCurrentPageToServer,
   unregisterPageHandler
 } from "../utils/ws/index.js";
-import { sendGroupChat } from "../utils/ws/actions.js";
+import {sendGroupChat} from "../utils/ws/actions.js";
 
 const roomCode = ref("");
 const myUserCode = ref(sessionStorage.getItem('userCode'));
@@ -184,7 +185,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .room-wrap {
-  min-height: 100vh;
+  height: 100vh;
   padding: 20px;
   box-sizing: border-box;
   background:
@@ -193,6 +194,9 @@ onBeforeUnmount(() => {
     linear-gradient(180deg, #0f1219 0%, #0b0e15 100%);
   color: #c8d6e5;
   animation: pageFadeIn 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 @keyframes pageFadeIn {
@@ -239,11 +243,17 @@ onBeforeUnmount(() => {
 }
 
 .player-list {
+  flex: 1;
+  overflow-y: auto;
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
+  align-items: start;
+  align-content: start;
+  padding-right: 4px;
 }
 
 .player-card {
@@ -416,5 +426,21 @@ onBeforeUnmount(() => {
   .chat-inp {
     width: 200px;
   }
+}
+
+/* 滚动条样式 */
+.player-list::-webkit-scrollbar {
+  width: 6px;
+}
+.player-list::-webkit-scrollbar-track {
+  background: #2d333b;
+  border-radius: 3px;
+}
+.player-list::-webkit-scrollbar-thumb {
+  background: #1a1d24;
+  border-radius: 3px;
+}
+.player-list::-webkit-scrollbar-thumb:hover {
+  background: #14171d;
 }
 </style>

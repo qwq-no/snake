@@ -20,7 +20,12 @@
             <span class="status">状态：{{ a.status || '离线' }}</span>
           </div>
           <button class="talkFriend" @click="goTalkFriend(a)">聊天</button>
-          <button v-if="a.roomCode != null" class="goFriend" @click="goToFriend(a)">加入房间</button>
+          <button
+            class="goFriend"
+            :class="{ disabled: a.roomCode == null }"
+            @click="a.roomCode != null && goToFriend(a)"
+          >加入房间</button>
+          <button class="delFriend" @click="delFriend(a)">×</button>
         </li>
       </ul>
     </div>
@@ -51,7 +56,7 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import {onBeforeUnmount, onMounted, ref} from 'vue';
 import router from "../router/index.js";
 import AddFriend from "./AddFriend.vue";
 import Set from "./Set.vue";
@@ -60,13 +65,14 @@ import FriendTalking from "./FriendTalking.vue";
 import AppliedFriend from "./AppliedFriend.vue";
 import {
   registerPageHandler,
-  syncCurrentPageToServer,
   setCurrentPageType,
   setCurrentUserCode,
+  syncCurrentPageToServer,
   unregisterPageHandler
 } from "../utils/ws/index.js";
-import { sendJoin, requestGroupChatHistory } from "../utils/ws/actions.js";
-import { sessionStore } from "../utils/sessionStorage.js";
+import {requestGroupChatHistory, sendJoin} from "../utils/ws/actions.js";
+import {sessionStore} from "../utils/sessionStorage.js";
+import {removeFriend} from "../utils/api.js";
 
 const componentsMap = { addFriend: AddFriend, set: Set, groupChat: GroupChat, appliedFriend: AppliedFriend, friendTalking: FriendTalking };
 const friends = ref([]);
@@ -119,12 +125,12 @@ function homeHandler(msg) {
   }
 
   if (msg.type === 'group_chat_message') {
-    groupMessages.value = [...groupMessages.value, msg.data].slice(-200);
+    groupMessages.value = [...groupMessages.value, msg.data].slice(-300);
     return;
   }
 
   if (msg.type === 'group_chat_history') {
-    groupMessages.value = (msg.data || []).slice(-200);
+    groupMessages.value = (msg.data || []).slice(-300);
     return;
   }
 }
@@ -171,6 +177,15 @@ function goTalkFriend(friend) {
     friendUserCode: friend.userCode,
     friendUserName: friend.userName
   });
+}
+async function delFriend(friend) {
+  if (!confirm(`确定删除好友 ${friend.userName || friend.userCode} 吗？`)) return;
+  try {
+    await removeFriend(Number(userCode.value), friend.userCode);
+    friends.value = friends.value.filter(f => f.userCode !== friend.userCode);
+  } catch (e) {
+    alert(e.message || '删除失败');
+  }
 }
 </script>
 
@@ -360,7 +375,7 @@ function goTalkFriend(friend) {
   align-items: center;
   justify-content: space-between;
   padding: clamp(6px, 0.8vh, 12px) clamp(8px, 1vw, 14px);
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
   transition: background 0.15s ease;
   gap: 4px;
 }
@@ -413,9 +428,31 @@ function goTalkFriend(friend) {
   color: #fff;
   border: none;
 }
+.friend li button.goFriend.disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  border: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 .friend li button.goFriend:hover {
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.30);
   transform: translateY(-1px);
+}
+.friend li button.delFriend {
+  padding: 2px 6px;
+  font-size: 14px;
+  line-height: 1;
+  color: #94a3b8;
+  border: none;
+  background: transparent;
+}
+.friend li button.delFriend:hover {
+  background: #fef2f2;
+  color: #ef4444;
+  border: none;
+  box-shadow: none;
+  transform: scale(1.15);
 }
 
 /* ===== 群聊预览（左下，透明玻璃质感） ===== */

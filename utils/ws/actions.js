@@ -1,8 +1,4 @@
-import {
-    getGameWs,
-    getCurrentPageType,
-    getCurrentRoomCode
-} from './state.js';
+import {getCurrentPageType, getCurrentRoomCode, getGameWs} from './state.js';
 
 export function sendGameWs(data) {
     const ws = getGameWs();
@@ -95,10 +91,12 @@ export function sendPrivateChat(toUserCode, content) {
     });
 }
 
-export function requestPrivateChatHistory(withUserCode) {
+export function requestPrivateChatHistory(withUserCode, page = 1, size = 50) {
     return sendGameWs({
         type: 'private_chat_history',
         pageType: 'talk',
-        withUserCode
+        withUserCode,
+        page,
+        size
     });
 }

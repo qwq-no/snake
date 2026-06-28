@@ -31,9 +31,16 @@
 <script setup>
 import {onBeforeUnmount, onMounted, ref} from 'vue';
 import router from "../router/index.js";
-import { sessionStore } from "../utils/sessionStorage.js";
+import {sessionStore} from "../utils/sessionStorage.js";
 import {getFriendList} from "../utils/api.js";
-import {registerPageHandler, sendJoin, syncCurrentPageToServer, setCurrentPageType, setCurrentUserCode, unregisterPageHandler} from "../utils/ws/index.js";
+import {
+  registerPageHandler,
+  sendJoin,
+  setCurrentPageType,
+  setCurrentUserCode,
+  syncCurrentPageToServer,
+  unregisterPageHandler
+} from "../utils/ws/index.js";
 
 
 const rooms = ref([]);
@@ -113,7 +120,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .room-select-page {
-  min-height: 100vh;
+  height: 100vh;
   padding: 20px;
   box-sizing: border-box;
   background:
@@ -121,6 +128,9 @@ onBeforeUnmount(() => {
     radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.06), transparent 40%),
     linear-gradient(180deg, #0f1219 0%, #0b0e15 100%);
   animation: pageFadeIn 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 @keyframes pageFadeIn {
@@ -129,7 +139,12 @@ onBeforeUnmount(() => {
 }
 
 .room-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   max-width: 1120px;
+  width: 100%;
   margin: 0 auto;
   padding: 24px;
   border-radius: 24px;
@@ -141,10 +156,14 @@ onBeforeUnmount(() => {
 }
 
 .room-grid {
+  flex: 1;
+  overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
-  align-items: stretch;
+  align-items: start;
+  align-content: start;
+  padding-right: 4px;
 }
 
 .room-card {
@@ -268,5 +287,21 @@ onBeforeUnmount(() => {
     padding: 14px;
     border-radius: 16px;
   }
+}
+
+/* 滚动条样式 */
+.room-grid::-webkit-scrollbar {
+  width: 6px;
+}
+.room-grid::-webkit-scrollbar-track {
+  background: #2d333b;
+  border-radius: 3px;
+}
+.room-grid::-webkit-scrollbar-thumb {
+  background: #1a1d24;
+  border-radius: 3px;
+}
+.room-grid::-webkit-scrollbar-thumb:hover {
+  background: #14171d;
 }
 </style>

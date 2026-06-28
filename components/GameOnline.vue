@@ -42,16 +42,17 @@
 
 <script setup>
 import {
-  initGameWs, registerPageHandler,
+  initGameWs,
+  registerPageHandler,
   sendEmoji,
   sendKeyInput,
   sendLeaveRoom,
-  syncCurrentPageToServer,
   setCurrentPageType,
   setCurrentRoomCode,
+  syncCurrentPageToServer,
   unregisterPageHandler
 } from "../utils/ws/index.js";
-import {onMounted, onBeforeUnmount, ref, nextTick} from 'vue';
+import {onBeforeUnmount, onMounted, ref} from 'vue';
 import router from "../router/index.js";
 
 
@@ -112,8 +113,7 @@ let emoji4Img;
 const roomEmojis = ref([]);
 const MAX_EMOJI_COUNT = 5;
 
-const snakeCount = 7;
-const snakes = ref(Array.from({ length: snakeCount }, () => ({
+const snakes = ref(Array.from({ length: 7 }, () => ({
   body: [],
   direction: null,
   directionNext: null,
@@ -298,13 +298,13 @@ function applyRoomState(roomState) {
 
   // 7. 蛇
   const serverSnakes = roomState.snakes || [];
-  const newSnakes = Array.from({ length: snakeCount }, () => ({
+  const newSnakes = Array.from({ length: serverSnakes.length }, () => ({
     body: [],
     alive: false,
     ownerUserCode: null
   }));
 
-  for (let i = 0; i < Math.min(serverSnakes.length, snakeCount); i++) {
+  for (let i = 0; i < serverSnakes.length; i++) {
     const s = serverSnakes[i] || {};
 
     newSnakes[i] = {

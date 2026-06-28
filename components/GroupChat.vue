@@ -1,6 +1,6 @@
 <script setup>
-import { computed, ref, watch, nextTick } from 'vue';
-import { sendGroupChat } from '../utils/ws/actions.js';
+import {nextTick, onMounted, ref, watch} from 'vue';
+import {sendGroupChat} from '../utils/ws/actions.js';
 
 const props = defineProps({
   messages: { type: Array, default: () => [] }
@@ -16,6 +16,11 @@ async function scrollToBottom() {
     listRef.value.scrollTop = listRef.value.scrollHeight;
   }
 }
+
+// 打开时滚到底部看最新消息
+onMounted(() => {
+  scrollToBottom();
+});
 
 watch(() => props.messages.length, () => {
   scrollToBottom();

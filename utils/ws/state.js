@@ -1,4 +1,10 @@
-const WS_URL = 'ws://localhost:8086/ws/game';
+/**
+ * WebSocket URL 自动适配：
+ * - 本地开发：ws://localhost:8086/ws/game（经过 Vite proxy 转发）
+ * - 生产环境：wss://你的域名/ws/game（经过 Nginx 反向代理）
+ */
+const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const WS_URL = `${protocol}//${window.location.host}/ws/game`;
 
 let ws = null;
 let reconnectTimer = null;

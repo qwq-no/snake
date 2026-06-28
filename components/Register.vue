@@ -36,9 +36,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { register } from '../utils/api.js'
+import {ref} from 'vue'
+import {useRouter} from 'vue-router'
+import {register} from '../utils/api.js'
 
 const router = useRouter()
 

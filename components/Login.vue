@@ -26,9 +26,9 @@
 </template>
 
 <script setup>
-import { login } from '../utils/api.js';
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import {login} from '../utils/api.js';
+import {ref} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
 
 // 1) 状态：ref 就是“可响应变量”
 const form = ref({

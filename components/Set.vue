@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import { updateDisplayName, updatePassword, logout } from '../utils/api.js';
+import {ref} from 'vue';
+import {logout, updateDisplayName, updatePassword} from '../utils/api.js';
 
 const newName = ref('');
 const newPassword = ref('');

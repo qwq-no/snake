@@ -16,7 +16,7 @@
 
 <script setup>
 import {onMounted, ref} from 'vue';
-import { getFriendRequestList, handleFriendRequest } from '../utils/api.js';
+import {getFriendRequestList, handleFriendRequest} from '../utils/api.js';
 
 const requests = ref([]);
 const message = ref('');

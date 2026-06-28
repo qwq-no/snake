@@ -1,4 +1,4 @@
-import { http } from './http.js'
+import {http} from './http.js'
 import {closeGameWs} from "./ws/index.js";
 
 
@@ -163,6 +163,21 @@ export async function getFriendList(myUserCode) {
 
     if (!resp.ok || result?.code !== 1) {
         throw new Error(result?.msg || '获取好友列表失败');
+    }
+
+    return result.data;
+}
+
+export async function removeFriend(myUserCode, friendUserCode) {
+    const resp = await http(`/api/friendship/remove?myUserCode=${myUserCode}&friendUserCode=${friendUserCode}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
+
+    const result = await resp.json();
+
+    if (!resp.ok || result?.code !== 1) {
+        throw new Error(result?.msg || '删除好友失败');
     }
 
     return result.data;

@@ -1,23 +1,27 @@
 import {
-    getWsUrl,
-    getGameWs,
-    setGameWs,
-    getShouldReconnect,
-    setShouldReconnect,
-    getReconnectTimer,
-    setReconnectTimer,
-    getHeartbeatTimer,
-    setHeartbeatTimer,
     getCurrentPageType,
     getCurrentUserCode,
-    getGlobalOpenHandler,
+    getGameWs,
     getGlobalCloseHandler,
-    getGlobalErrorHandler,
     getGlobalConnectHandler,
-    getPageHandlers, setGlobalOpenHandler, setGlobalCloseHandler, setGlobalErrorHandler, setGlobalConnectHandler
+    getGlobalErrorHandler,
+    getGlobalOpenHandler,
+    getHeartbeatTimer,
+    getPageHandlers,
+    getReconnectTimer,
+    getShouldReconnect,
+    getWsUrl,
+    setGameWs,
+    setGlobalCloseHandler,
+    setGlobalConnectHandler,
+    setGlobalErrorHandler,
+    setGlobalOpenHandler,
+    setHeartbeatTimer,
+    setReconnectTimer,
+    setShouldReconnect
 } from './state.js';
 
-import { sendGameWs, sendPageChange } from './actions.js';
+import {sendGameWs, sendPageChange} from './actions.js';
 
 let lastAnnouncedWs = null;
 let lastAnnouncedPageType = null;

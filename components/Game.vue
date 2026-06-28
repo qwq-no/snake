@@ -29,10 +29,15 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
+import {onBeforeUnmount, onMounted, ref} from 'vue';
 import router from "../router/index.js";
 import {submitLength} from "../utils/api.js";
-import {registerPageHandler, syncCurrentPageToServer, setCurrentPageType, unregisterPageHandler} from "../utils/ws/index.js";
+import {
+  registerPageHandler,
+  setCurrentPageType,
+  syncCurrentPageToServer,
+  unregisterPageHandler
+} from "../utils/ws/index.js";
 
 const canvas = ref(null);
 const fogCanvas = ref(null);

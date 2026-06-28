@@ -62,12 +62,12 @@
 import {nextTick, onBeforeUnmount, onMounted, ref} from 'vue';
 import {
   registerPageHandler,
-  syncCurrentPageToServer,
+  sendPrivateChat,
   setCurrentPageType,
-  unregisterPageHandler,
-  sendPrivateChat
+  syncCurrentPageToServer,
+  unregisterPageHandler
 } from "../utils/ws/index.js";
-import { sendGameWs } from "../utils/ws/actions.js";
+import {sendGameWs} from "../utils/ws/actions.js";
 
 const props = defineProps({
   friendUserCode: { type: [Number, String], default: null },
@@ -143,7 +143,16 @@ function talkHandler(msg) {
   }
 
   if (msg.type === 'private_chat_history') {
-    currentMessages.value = msg.data || [];
+    const data = msg.data;
+    // 支持分页响应格式 {messages, total, page, size, hasMore}，同时向后兼容旧数组格式
+    if (data && Array.isArray(data.messages)) {
+      currentMessages.value = data.messages;
+      // hasMore 可用于后续实现滚动加载更多
+    } else if (Array.isArray(data)) {
+      currentMessages.value = data;
+    } else {
+      currentMessages.value = [];
+    }
     scrollToBottom();
     return;
   }
@@ -238,7 +247,7 @@ onBeforeUnmount(() => {
 .chat-user-item {
   padding: 14px 18px;
   cursor: pointer;
-  border-bottom: 1px solid #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
   font-size: 14px;
   color: #334155;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);

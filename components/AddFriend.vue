@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import { submitFriendApply } from '../utils/api.js';
+import {ref} from 'vue';
+import {submitFriendApply} from '../utils/api.js';
 
 const otherUserCode = ref('');
 const message = ref('');
