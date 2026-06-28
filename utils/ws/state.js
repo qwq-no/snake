@@ -20,7 +20,6 @@ const pageHandlers = new Map();
 let globalOpenHandler = null;
 let globalCloseHandler = null;
 let globalErrorHandler = null;
-let globalConnectHandler = null;
 
 export function getWsUrl() {
     return WS_URL;
@@ -98,10 +97,6 @@ export function setGlobalErrorHandler(handler) {
     globalErrorHandler = handler;
 }
 
-export function setGlobalConnectHandler(handler) {
-    globalConnectHandler = handler;
-}
-
 export function getGlobalOpenHandler() {
     return globalOpenHandler;
 }
@@ -114,6 +109,3 @@ export function getGlobalErrorHandler() {
     return globalErrorHandler;
 }
 
-export function getGlobalConnectHandler() {
-    return globalConnectHandler;
-}

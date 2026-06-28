@@ -32,12 +32,6 @@
 import {onBeforeUnmount, onMounted, ref} from 'vue';
 import router from "../router/index.js";
 import {submitLength} from "../utils/api.js";
-import {
-  registerPageHandler,
-  setCurrentPageType,
-  syncCurrentPageToServer,
-  unregisterPageHandler
-} from "../utils/ws/index.js";
 
 const canvas = ref(null);
 const fogCanvas = ref(null);
@@ -60,7 +54,6 @@ const changeIntoProps = {
 let propsCount = [5,5,5,5];//道具
 const gameState = ref('playing')  // playing | paused | gameOver
 let ctx;
-// let animationId;
 let timeOutId;
 const map = Array.from({ length: 102 }, () => Array(102).fill(0))
 const MAP_SIZE = 102;
@@ -119,8 +112,6 @@ function getAppLeft() {
   return document.getElementById('app').getBoundingClientRect().left;
 }
 
-function gameHandler() {}
-
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -148,13 +139,6 @@ function goHome() {
   router.back();
 }
 
-function onOpen(){
-}
-function onClose(){
-}
-function onError(){
-}
-
 async function updateMaxLength() {
   try {
     const data = await submitLength(snakes[0].body.length);
@@ -173,28 +157,6 @@ function resizeCanvas() {
   fogCanvas.value.width = w;
   fogCanvas.value.height = h;
 }
-
-// function drawGrid(cameraX, cameraY) {
-//   ctx.strokeStyle = '#222';
-//   ctx.lineWidth = 1;
-//
-//   const startX = Math.floor(cameraX / WORLD.grid) * WORLD.grid;
-//   const startY = Math.floor(cameraY / WORLD.grid) * WORLD.grid;
-//
-//   for (let x = startX; x < cameraX + VIEW.width / VIEW.scale; x += WORLD.grid) {
-//     ctx.beginPath();
-//     ctx.moveTo(x - cameraX, -cameraY);
-//     ctx.lineTo(x - cameraX, WORLD.height - cameraY);
-//     ctx.stroke();
-//   }
-//
-//   for (let y = startY; y < cameraY + VIEW.height / VIEW.scale; y += WORLD.grid) {
-//     ctx.beginPath();
-//     ctx.moveTo(-cameraX, y - cameraY);
-//     ctx.lineTo(WORLD.width - cameraX, y - cameraY);
-//     ctx.stroke();
-//   }
-// }
 
 function initWall(cameraX, cameraY) {
   ctx.strokeStyle = '#222';
@@ -587,7 +549,6 @@ function render() {
   drawSnake(cameraX, cameraY);
   drawMinimap();
   if(fogShow){renderFog();}
-  // drawGrid(cameraX, cameraY);
 }
 
 function loop() {
@@ -618,18 +579,13 @@ onMounted(async () => {
   initGame();
   window.addEventListener('resize', resizeCanvas);
   document.addEventListener('keydown', handleKeydown);
-  setCurrentPageType('game');
-  registerPageHandler('game',gameHandler);
-  syncCurrentPageToServer('game');
   loop();
 });
 
 onBeforeUnmount(() => {
-  clearTimeout(timeOutId)
-  // cancelAnimationFrame(animationId);
+  clearTimeout(timeOutId);
   window.removeEventListener('resize', resizeCanvas);
   document.removeEventListener('keydown', handleKeydown);
-  unregisterPageHandler('game');
 });
 </script>
 

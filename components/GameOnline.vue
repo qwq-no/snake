@@ -135,17 +135,14 @@ let myUserCode;
 let currentRoomCode = null;
 const countdownSeconds = ref(0);
 const countdownText = ref('00:00');
-let onlineMessageCount = 0;
 let lastOnlineMessageAt = 0;
 let pendingRoomState = null;
 let pendingRoomDelta = null;
 let hasRoomSnapshot = false;
 let onlineRenderRafId = null;
 let onlineResyncTimerId = null;
-let lastResyncAt = 0;
 
 const DELTA_STALE_MS = 1500;
-const RESYNC_MIN_INTERVAL_MS = 2000;
 
 function getAppLeft() {
   return document.getElementById('app').getBoundingClientRect().left;
@@ -190,17 +187,11 @@ function goHome() {
   router.push("/");
 }
 
-function onOpen() {
-}
-
 function onClose() {
   // 标记需要重新初始化，下次 snapshot 会重建状态
   hasRoomSnapshot = false;
   pendingRoomState = null;
   pendingRoomDelta = null;
-}
-
-function onError() {
 }
 
 function scheduleOnlineRender() {
@@ -221,7 +212,6 @@ function scheduleOnlineRender() {
 function onlineHandler(msg) {
   if (!msg || !msg.type) return;
   if (msg.type === 'room_snapshot') {
-    onlineMessageCount += 1;
     lastOnlineMessageAt = Date.now();
     pendingRoomState = msg.data;
     pendingRoomDelta = null; // snapshot 覆盖任何待处理的 delta
@@ -230,7 +220,6 @@ function onlineHandler(msg) {
   }
 
   if (msg.type === 'room_delta') {
-    onlineMessageCount += 1;
     lastOnlineMessageAt = Date.now();
     if (!hasRoomSnapshot) {
       // 如果还没应用快照，忽略增量（保持现有逻辑）
@@ -241,10 +230,6 @@ function onlineHandler(msg) {
     return;
   }
 
-  if (msg.type === 'room_debug_time') {
-    // 诊断时需要可以打开，这里默认不输出，避免日志噪音
-    // logKV('debug_time_deltaMs', Date.now() - Number(msg.data || 0));
-  }
 }
 
 function applyRoomState(roomState) {
@@ -849,11 +834,7 @@ onMounted(async () => {
   setCurrentPageType('online');
   setCurrentRoomCode(Number(currentRoomCode));
   registerPageHandler('online', onlineHandler);
-  initGameWs({
-    onOpen,
-    onClose,
-    onError
-  });
+  initGameWs({ onOpen: null, onClose, onError: null });
   initGame();
 
   // Phase 3: 异步加载图片（期间 WS 事件可能触发，render 会正确绘制）
@@ -868,8 +849,7 @@ onMounted(async () => {
 
     const now = Date.now();
     if (now - lastOnlineMessageAt > DELTA_STALE_MS) {
-      lastResyncAt = now;
-      // [watchdog disabled] would reload here
+      // staleness detected; future: trigger resync
     }
   }, 500);
 

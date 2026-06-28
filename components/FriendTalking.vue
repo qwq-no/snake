@@ -62,6 +62,7 @@
 import {nextTick, onBeforeUnmount, onMounted, ref} from 'vue';
 import {
   registerPageHandler,
+  requestPrivateChatHistory,
   sendPrivateChat,
   setCurrentPageType,
   syncCurrentPageToServer,
@@ -98,11 +99,7 @@ function selectChatUser(item) {
   currentChatUser.value = item;
   currentMessages.value = [];
   // 请求聊天历史
-  sendGameWs({
-    type: 'private_chat_history',
-    pageType: 'talk',
-    withUserCode: item.userCode
-  });
+  requestPrivateChatHistory(item.userCode);
   scrollToBottom();
 }
 

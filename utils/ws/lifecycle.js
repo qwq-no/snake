@@ -3,7 +3,6 @@ import {
     getCurrentUserCode,
     getGameWs,
     getGlobalCloseHandler,
-    getGlobalConnectHandler,
     getGlobalErrorHandler,
     getGlobalOpenHandler,
     getHeartbeatTimer,
@@ -13,7 +12,6 @@ import {
     getWsUrl,
     setGameWs,
     setGlobalCloseHandler,
-    setGlobalConnectHandler,
     setGlobalErrorHandler,
     setGlobalOpenHandler,
     setHeartbeatTimer,
@@ -179,14 +177,12 @@ export function syncCurrentPageToServer(pageType = getCurrentPageType()) {
 export function initGameWs({
                                onOpen,
                                onClose,
-                               onError,
-                               onConnect
+                               onError
                            } = {}) {
     bindUnloadGuard();
     setGlobalOpenHandler(onOpen || null);
     setGlobalCloseHandler(onClose || null);
     setGlobalErrorHandler(onError || null);
-    setGlobalConnectHandler(onConnect || null);
 }
 
 export function connectGameWs() {
@@ -211,13 +207,7 @@ export function connectGameWs() {
         const openHandler = getGlobalOpenHandler();
         if (openHandler) openHandler();
 
-        const connectPayload = buildConnectPayload();
-        const connectHandler = getGlobalConnectHandler();
-        if (connectHandler) {
-            connectHandler(connectPayload);
-        } else {
-            sendGameWs(connectPayload);
-        }
+        sendGameWs(buildConnectPayload());
 
         // 重连时始终通知服务器当前页面，确保房间绑定关系正确恢复
         announceCurrentPage(getCurrentPageType(), true);

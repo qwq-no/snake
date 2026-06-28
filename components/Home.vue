@@ -48,7 +48,6 @@
         <component
             :is="componentsMap[activeName]"
             v-bind="activeProps"
-            @close="close"
         />
       </div>
     </div>

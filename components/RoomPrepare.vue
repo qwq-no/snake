@@ -125,13 +125,6 @@ function prepareHandler(msg) {
   }
 }
 
-function prepareOnlineHandler(msg) {
-  if (!msg || !msg.type) return;
-  if (msg.type === 'room_snapshot' || msg.type === 'room_delta' || msg.type === 'room_debug_time') {
-    return;
-  }
-}
-
 function sendGroupChatFromPrepare() {
   const text = groupInput.value.trim();
   if (!text) return;
@@ -149,14 +142,7 @@ function backToSelect() {
   router.push('/roomSelect');
 }
 
-function onOpen() {
-}
 
-function onClose() {
-}
-
-function onError() {
-}
 
 onMounted(() => {
   roomCode.value = sessionStore.get("roomCode") || sessionStorage.getItem("roomCode");
@@ -165,9 +151,8 @@ onMounted(() => {
   setCurrentPageType('prepare');
   setCurrentRoomCode(Number(roomCode.value));
 
-  initGameWs({ onOpen, onClose, onError });
+  initGameWs({ onOpen: null, onClose: null, onError: null });
   registerPageHandler('prepare', prepareHandler);
-  registerPageHandler('online', prepareOnlineHandler);
   syncCurrentPageToServer('prepare');
 });
 
